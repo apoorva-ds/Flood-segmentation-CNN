@@ -40,16 +40,9 @@ Image properties:
 - Ground-truth masks: Binary
 - Training batch size: 16
 
-The synthetic images contain randomly generated target regions represented using elliptical shapes over a noisy grayscale background.
-
 ## Preprocessing
 
-The images are:
-
-1. Resized to 128 × 128 pixels.
-2. Converted to floating-point values.
-3. Scaled from [0, 255] to [0, 1].
-4. Normalized using mean = 0.5 and standard deviation = 0.5.
+The images are resized to 128 × 128 pixels, converted to floating-point values, scaled to [0,1], and normalized using mean = 0.5 and standard deviation = 0.5.
 
 The corresponding masks are converted into binary segmentation masks.
 
@@ -57,41 +50,9 @@ The corresponding masks are converted into binary segmentation masks.
 
 A lightweight U-Net architecture, named `UNetMini`, is used.
 
-The encoder contains convolutional blocks with:
+The encoder contains convolutional blocks with 32, 64 and 128 channels. The bottleneck contains 256 channels. The decoder uses transposed convolutions and skip connections to reconstruct the segmentation output.
 
-- 32 channels
-- 64 channels
-- 128 channels
-
-The bottleneck contains 256 channels.
-
-The decoder progressively reconstructs the spatial resolution using transposed convolutions and skip connections.
-
-The final 1×1 convolution produces a single-channel segmentation output.
-
-### Architecture
-
-Input (1 × 128 × 128)
-
-→ Double Convolution (32)
-
-→ Max Pooling
-
-→ Double Convolution (64)
-
-→ Max Pooling
-
-→ Double Convolution (128)
-
-→ Max Pooling
-
-→ Bottleneck (256)
-
-→ Decoder with Skip Connections
-
-→ 1×1 Convolution
-
-→ Output Segmentation Mask
+The final 1×1 convolution produces a single-channel segmentation mask.
 
 ## Training
 
@@ -112,31 +73,34 @@ A combined Binary Cross-Entropy and Dice loss was used:
 
 Intersection over Union (IoU) was used to evaluate segmentation performance.
 
-Additional inference techniques explored in the project include:
+Additional inference techniques explored include:
 
 - Probability threshold optimization
 - Test-Time Augmentation (TTA)
 - Connected-component post-processing
 - Morphological post-processing
 
-Visual overlays were generated to compare ground-truth regions and predicted regions.
+The project also generates visual overlays comparing ground-truth and predicted regions.
 
 ## Results
 
-The trained model produced segmentation predictions for the test dataset and generated visual overlays and a demonstration GIF.
+The trained model successfully produced segmentation predictions on the test dataset. The project generated prediction overlays and demonstration visualizations for qualitative evaluation.
 
-A detailed numerical evaluation and visual outputs are available in the project notebook.
+The detailed results are available in the project notebook.
 
 ## Repository Contents
 
 ```text
 flood-segmentation-cnn/
-│
 ├── README.md
 ├── flood_segmentation.ipynb
-└── best_model.pth
+├── best_model.pth
+├── model.onnx
+└── requirements.txt
 
+```
 ## Technologies Used
+
 - Python
 - PyTorch
 - NumPy
@@ -145,13 +109,14 @@ flood-segmentation-cnn/
 - ImageIO
 - Google Colab
 - CUDA
+- ONNX
 - GitHub
 
 ## How to Run
 
-The project notebook can be opened in Google Colab or another compatible Jupyter environment.
+Open `flood_segmentation.ipynb` in Google Colab or another compatible Jupyter environment.
 
-The notebook contains the complete workflow including:
+The notebook contains the complete workflow:
 
 1. Synthetic dataset generation
 2. Dataset preprocessing
